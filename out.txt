@@ -1,0 +1,2 @@
+Pay is: 10
+Rate is: hourly
