@@ -23,12 +23,12 @@ int main()
     int z = 15;
 
     passByRef(x,y);
-    cout << "(PassByRef) X was changed to: " << x << endl;
-    cout << "(PassByRef) Y was changed to: " << y << endl;
+    cout << "(PassByRef) X was changed to: " << x << endl; //100
+    cout << "(PassByRef) Y was changed to: " << y << endl; //200
 
     int a = passByVal(z);
-    cout << "(PassByVal) Z stays the same: " << z << endl;
-    cout << "(PassByVal) A was changed to: " << a << endl;
+    cout << "(PassByVal) Z stays the same: " << z << endl; //15
+    cout << "(PassByVal) A was changed to: " << a << endl; //300
 
  return 0;
 }
