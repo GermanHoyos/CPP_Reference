@@ -1,0 +1,4 @@
+﻿  03_Asteroids.cpp
+C:\Users\Hoyos\Desktop\m_c_t\4_RayLib_C++\1_WorkingC++Repo\03_Asteroids\03_Asteroids.cpp(34,23): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\Hoyos\Desktop\m_c_t\4_RayLib_C++\1_WorkingC++Repo\03_Asteroids\03_Asteroids.cpp(54,19): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+  03_Asteroids.vcxproj -> C:\Users\Hoyos\Desktop\m_c_t\4_RayLib_C++\1_WorkingC++Repo\03_Asteroids\x64\Debug\03_Asteroids.exe
