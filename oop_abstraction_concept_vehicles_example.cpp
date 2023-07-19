@@ -5,7 +5,7 @@ using namespace std;
 
 class Car {
 public:
-    virtual void start() = 0; // Abstract method
+    virtual void start() = 0; // Abstract method //not defined
     virtual void stop() = 0; // Abstract method
     virtual void drive() = 0; // Abstract method
 };
@@ -41,7 +41,7 @@ public:
 };
 
 int main() {
-    Car* car1 = new SportsCar();
+    Car* car1 = new SportsCar(); //if a pointer was not used then the methods would be void still
     Car* car2 = new SedanCar();
 
     car1->start();
@@ -52,7 +52,7 @@ int main() {
     car2->drive();
     car2->stop();
 
-    delete car1;
+    delete car1; //the new keyword was used, so now we must delete
     delete car2;
 
     return 0;

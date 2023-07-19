@@ -27,9 +27,13 @@ public:
 };
 
 // Function Declaration and Definition using Function Pointers
-int (*operation)(int, int) = &add;
+// int (*mathOperation)(int, int) = nullptr;
+int (*operation)(int, int) = &add; //see "function_pointer_calls_multi_functions.cpp"
+
 
 // Function Declaration and Definition using Lambda Expressions
+// particularly useful in situations where you need to define a small, one-time function
+// without the need to declare a named function separately.
 auto lambdaMultiply = [](int a, int b) -> int {
     return a * b;
 };
