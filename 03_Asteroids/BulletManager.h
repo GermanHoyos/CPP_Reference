@@ -1,25 +1,27 @@
 #pragma once
 #ifndef BULLET_MANAGER_H //ifndef = if not defined
 #define BULLET_MANAGER_H
-
 #include <vector>
 #include <raylib.h>
 
 class Bullet {
 public:
 	static int id;
+	int myId;
 	float x;
 	float y;
 	float radius;
 	float angle;
-	float dt;
-	float fr;
+	bool out_of_bounds = false;
+	bool hit_asteroid = false;
 
 	Vector2 bulletCenter;
 
 	Bullet(float posX, float posY, float r, float angle);
 
 	void moveBullet();
+	void detectBounds();
+	void detectAsteroids();
 	void drawOutline();
 	void drawBullet();
 };
@@ -28,6 +30,8 @@ class BulletManager { //* see explanation below
 public:
 	static std::vector<Bullet> bulletList;
 };
+
+
 /*
  In C++, when a member variable is declared as
  static in a class, it means that the variable

@@ -5,8 +5,10 @@
 #include <string>
 #include <iomanip>
 #include <vector>
+#include <random>
 #include "PlayerManager.h"
 #include "BulletManager.h"
+#include "AsteroidManager.h"
 
 using namespace std;
 //For simplicity I will be referencing the 3 core functions of PICO-8 and match
@@ -19,10 +21,10 @@ The 3 core functions of PICO-8 =
 	3) function _DRAW	 (Post Update, 30x a sec)
 */
 
-
 //Global Scope
 //cannot not instantiate inside the scope of the main() function
 vector<Bullet> BulletManager::bulletList;
+vector<Asteroid> AsteroidManager::asteroidList;
 
 int main() { //PICO 8 FUNCTION _INIT()
 
@@ -42,6 +44,13 @@ int main() { //PICO 8 FUNCTION _INIT()
 
 	//Game Objects
 	PlayerShip playerShip;
+	bool buildAnotherAsteroid = false;
+	int bullet_id;
+	int asteroid_id;
+
+	//Collision vectors
+	Vector2 bullet_center_check;
+	Vector2 asteroid_center_check;
 
 	//If window isnt closed, continue to run game
 	while (!WindowShouldClose()) { //PICO 8 FUNCTION _UPDATE()
@@ -79,8 +88,85 @@ int main() { //PICO 8 FUNCTION _INIT()
 			float angle = playerShip.angle;
 			float rad = 2.0f;
 
-			BulletManager::bulletList.emplace_back(x,y,rad, angle);
+			BulletManager::bulletList.emplace_back(x, y, rad, angle);
 			pressedKey = 0;
+		}
+
+		//create an asteroid every X seconds only once
+		if (seconds % 2 == 0)
+		{
+			//InitWindow(800, 600, "Asteroids in C++ [Raylib]");
+			//width  800 //red line 210
+			//height 600
+
+			//stops the function from creating more than 1 asteroid every Nth second
+			if (buildAnotherAsteroid == true)
+			{
+				//MERSENNE TWISTER pseudo-random number generator with a seed of "19937"
+				//https://en.wikipedia.org/wiki/Mersenne_Twister
+				random_device rd;
+				mt19937 gen(rd());
+				uniform_int_distribution<int> global_func_dist(1, 4);
+
+				//int wall_chosen = rand() % 4 + 1; // 1 through 4 randomly gen
+				int wall_chosen = global_func_dist(gen);
+				int x;
+				int y;
+				float asteroid_radius = 35.0f;
+				float direction_of_travel;
+
+				//top 210degrees to 330degrees
+				if (wall_chosen == 1) {
+					uniform_int_distribution<int> dist(220, 800);
+					uniform_real_distribution<float> rand_degree(210.0f, 330.0f);
+			
+					x = dist(gen);
+					y = 10;
+					direction_of_travel =  rand_degree(gen) / 180.0f * PI;
+					AsteroidManager::asteroidList.emplace_back(x, y, asteroid_radius, direction_of_travel);
+				}
+
+				//left 60degrees to 315degrees
+				if (wall_chosen == 2) {
+					uniform_int_distribution<int> dist(10, 600);
+					uniform_real_distribution<float> rand_degree(60.0f, 315.0f);
+
+					x = 240;
+					y = dist(gen);
+					direction_of_travel = rand_degree(gen) / 180.0f * PI;
+					AsteroidManager::asteroidList.emplace_back(x, y, asteroid_radius, direction_of_travel);
+				}
+
+				//right 120degrees to 240degrees
+				if (wall_chosen == 3) {
+					uniform_int_distribution<int> dist(10, 600);
+					uniform_real_distribution<float> rand_degree(120.0f, 240.0f);
+
+					x = 790;
+					y = dist(gen);
+					direction_of_travel = rand_degree(gen) / 180.0f * PI;
+					AsteroidManager::asteroidList.emplace_back(x, y, asteroid_radius, direction_of_travel);
+				}
+
+				//bottom 30degrees to 150degrees
+				if (wall_chosen == 4) {
+					uniform_int_distribution<int> dist(220, 800);
+					uniform_real_distribution<float> rand_degree(30.0f, 150.0f);
+
+					x = dist(gen);
+					y = 590;
+					direction_of_travel = rand_degree(gen) / 180.0f * PI;
+					AsteroidManager::asteroidList.emplace_back(x, y, asteroid_radius, direction_of_travel);
+				}
+
+				DrawText(to_string(wall_chosen).c_str(), 2, 80, 20, GREEN);
+				//DrawText(to_string(x).c_str(), 2, 100, 20, GREEN);
+
+				
+				buildAnotherAsteroid = false;
+			}
+		} else {
+			buildAnotherAsteroid = true;
 		}
 
 		//Console
@@ -98,12 +184,17 @@ int main() { //PICO 8 FUNCTION _INIT()
 		//bullet with the bullets "void DrawBullet()" function
 		for (Bullet& bullet : BulletManager::bulletList) { //* see explanation below
 			bullet.drawBullet();
-			
+			bullet_center_check = bullet.bulletCenter;
 		}
 		//Another way of showing particular bullets for troubleshooting
 		//if (!BulletManager::bulletList.empty()){
 		//	BulletManager::bulletList.at(0).drawBullet();
 		//}
+		for (Asteroid& asteroid : AsteroidManager::asteroidList) { //* see explanation below
+			asteroid.drawAsteroid();
+			asteroid_center_check = asteroid.asteroidCenter;
+		}
+
 
 		EndDrawing();
 	}

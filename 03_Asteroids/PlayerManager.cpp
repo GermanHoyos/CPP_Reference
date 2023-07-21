@@ -80,11 +80,28 @@ void PlayerShip::moveShip() {
 
 	if (IsKeyDown(32)) {
 		//Bullet bullet(vertex_a);
-
 	}
 
+	//this moved player based on new vector
 	shipCenter.x += newVector.x;
 	shipCenter.y += newVector.y;
+	
+	//check if player has left bounds
+	if (shipCenter.x < 210){
+		shipCenter.x = 800;
+	};
+	if (shipCenter.y < 0) {
+		shipCenter.y = 600;
+	};
+	if (shipCenter.x > 800){
+		shipCenter.x = 210;
+	};
+	if (shipCenter.y > 600){
+		shipCenter.y = 0;
+	};
+
+
+
 }
 
 void PlayerShip::drawShip() {
