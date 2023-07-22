@@ -17,6 +17,7 @@ public:
 
 	void moveAsteroid();
 	void detectBounds();
+	void detectOtherAsteroids();
 	void drawOutline();
 	void drawAsteroid();
 

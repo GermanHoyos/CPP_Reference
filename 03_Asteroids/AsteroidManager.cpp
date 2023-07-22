@@ -48,6 +48,12 @@ void Asteroid::detectBounds(){
 	};
 }
 
+void Asteroid::detectOtherAsteroids(){
+	//Having each asteroid check for collisions with
+	//every other asteroid would indeed be inefficient
+	//and lead to a time complexity of O(n^2), 
+}
+
 void Asteroid::drawOutline(){
 	DrawCircleV(asteroidCenter, radius, WHITE);
 	//DrawText(to_string((int)asteroidCenter.x).c_str(), asteroidCenter.x, asteroidCenter.y - 20, 10, GREEN);

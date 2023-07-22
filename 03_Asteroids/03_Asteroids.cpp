@@ -1,6 +1,8 @@
 #include <iostream>
 #include <raylib.h>
 #include <cmath>
+#include <algorithm>
+#include <math.h>
 #include <stdlib.h>
 #include <string>
 #include <iomanip>
@@ -9,6 +11,8 @@
 #include "PlayerManager.h"
 #include "BulletManager.h"
 #include "AsteroidManager.h"
+
+#define M_PI 3.14
 
 using namespace std;
 //For simplicity I will be referencing the 3 core functions of PICO-8 and match
@@ -25,6 +29,65 @@ The 3 core functions of PICO-8 =
 //cannot not instantiate inside the scope of the main() function
 vector<Bullet> BulletManager::bulletList;
 vector<Asteroid> AsteroidManager::asteroidList;
+
+void checkForAsteroidCollisions() {
+	for (Asteroid& asteroid1 : AsteroidManager::asteroidList) {
+		Vector2 mainAsteroid = { asteroid1.asteroidCenter.x, asteroid1.asteroidCenter.y };
+		int mainRadius = asteroid1.radius;
+		int mainId = asteroid1.myId; // Use asteroid1.myId instead of asteroid1.id
+		bool alreadyNotified = false;
+
+		for (Asteroid& asteroid2 : AsteroidManager::asteroidList) {
+			if (mainId != asteroid2.myId) { // Use asteroid2.myId instead of asteroid2.id
+				Vector2 otherAsteroid = { asteroid2.asteroidCenter.x, asteroid2.asteroidCenter.y };
+				int otherRadius = asteroid2.radius;
+
+				double distanceBetweenAsteroids = sqrt(
+					pow((mainAsteroid.x - otherAsteroid.x), 2) +
+					pow((mainAsteroid.y - otherAsteroid.y), 2)
+				);
+
+				if (distanceBetweenAsteroids <= mainRadius + otherRadius) {
+					if (!alreadyNotified) {
+						DrawText("COLLIDED", mainAsteroid.x, mainAsteroid.y, 20, GREEN);
+						alreadyNotified = true;
+
+						//handle collision
+						float normalVectorX = mainAsteroid.x - otherAsteroid.x;
+						float normalVectorY = mainAsteroid.y - otherAsteroid.y;
+
+						//calc length of above normal vector
+						float length = sqrt(normalVectorX * normalVectorX + normalVectorY * normalVectorY);
+
+						//normalize the normal vector
+						normalVectorX /= length;
+						normalVectorY /= length;
+
+						//calc velocity may not be needed since velocity will not change
+						//relative_velocity = (circle2.vx - circle1.vx) * nx + (circle2.vy - circle1.vy) * ny
+
+						//update vectors for both circles
+						asteroid1.asteroidCenter.x += 1 * normalVectorX;
+						asteroid1.asteroidCenter.y += 1 * normalVectorY;
+						Vector2 newAsteroidDirection1 = {normalVectorX,normalVectorY}; 
+
+
+						asteroid2.asteroidCenter.x -= 1 * normalVectorX;
+						asteroid2.asteroidCenter.y -= 1 * normalVectorY;
+						Vector2 newAsteroidDirection2 = {normalVectorX,normalVectorY};
+
+						//somehow update angles?
+
+
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
 
 int main() { //PICO 8 FUNCTION _INIT()
 
@@ -194,6 +257,11 @@ int main() { //PICO 8 FUNCTION _INIT()
 			asteroid.drawAsteroid();
 			asteroid_center_check = asteroid.asteroidCenter;
 		}
+		
+		//currently this is an in efficent way to do this
+		//in the future implement "Broad-Phase collision detection"
+		//and "Narrow-Phase" collision detection
+		checkForAsteroidCollisions();
 
 
 		EndDrawing();
