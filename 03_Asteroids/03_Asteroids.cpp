@@ -11,6 +11,7 @@
 #include "PlayerManager.h"
 #include "BulletManager.h"
 #include "AsteroidManager.h"
+#include "ParticleManager.h"
 
 #define M_PI 3.14
 
@@ -29,7 +30,9 @@ The 3 core functions of PICO-8 =
 //cannot not instantiate inside the scope of the main() function
 vector<Bullet> BulletManager::bulletList;
 vector<Asteroid> AsteroidManager::asteroidList;
+vector<Particle> ParticleManager::particleList;
 
+//detect and react to asteroid collisions
 void checkForAsteroidCollisions() {
 	for (Asteroid& asteroid1 : AsteroidManager::asteroidList) {
 		Vector2 mainAsteroid = { asteroid1.position.x, asteroid1.position.y };
@@ -172,6 +175,8 @@ int main() { //PICO 8 FUNCTION _INIT()
 			//InitWindow(800, 600, "Asteroids in C++ [Raylib]");
 			//width  800 //red line 210
 			//height 600
+				
+
 
 			//stops the function from creating more than 1 asteroid every Nth second
 			if (buildAnotherAsteroid == true)
@@ -275,6 +280,10 @@ int main() { //PICO 8 FUNCTION _INIT()
 		//and "Narrow-Phase" collision detection
 		checkForAsteroidCollisions();
 
+		//draw all particles that are currently in the particle list
+		for (Particle& particle: ParticleManager::particleList){
+			particle.drawParticle();
+		}
 
 		EndDrawing();
 	}

@@ -1,6 +1,7 @@
 #include "BulletManager.h"
 #include "AsteroidManager.h"
 #include "TimeManager.h"
+#include "ParticleManager.h"
 #include <string>
 #include <algorithm>
 #include <math.h>
@@ -85,6 +86,11 @@ void Bullet::detectAsteroids(){
 		//(int)findMe->asteroidCenter.x < (int)bulletCenter.x
 		if (distance <= findMe->radius + radius) {
 			findMe = AsteroidManager::asteroidList.erase(findMe);
+			
+			for (int i = 0; i < 125; i++){
+				Particle::genParticle(bulletCenter.x, bulletCenter.y);
+			}
+
 		}
 		else {
 			++findMe;
@@ -93,7 +99,7 @@ void Bullet::detectAsteroids(){
 }
 
 void Bullet::drawOutline() {
-	DrawCircleV(bulletCenter, radius, WHITE);
+	DrawCircleV(bulletCenter, radius, {255,255,255,255});
 	//troubleshoot bullet Id's and various other data
 	
 	//DrawText(to_string((int)bulletCenter.x).c_str(),bulletCenter.x,bulletCenter.y - 20, 10, GREEN);
@@ -107,3 +113,4 @@ void Bullet::drawBullet() {
 	detectAsteroids();
 	drawOutline();
 }
+
