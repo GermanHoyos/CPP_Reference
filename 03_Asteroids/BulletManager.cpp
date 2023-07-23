@@ -79,8 +79,8 @@ void Bullet::detectAsteroids(){
 	for (auto findMe = AsteroidManager::asteroidList.begin(); findMe != AsteroidManager::asteroidList.end(); ) {
 		//const double epsilon = 0.001;
 		double distance = sqrt(
-			pow((bulletCenter.x - findMe->asteroidCenter.x), 2) +
-			pow((bulletCenter.y - findMe->asteroidCenter.y), 2)
+			pow((bulletCenter.x - findMe->position.x), 2) +
+			pow((bulletCenter.y - findMe->position.y), 2)
 		);
 		//(int)findMe->asteroidCenter.x < (int)bulletCenter.x
 		if (distance <= findMe->radius + radius) {

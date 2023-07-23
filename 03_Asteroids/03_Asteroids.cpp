@@ -32,14 +32,14 @@ vector<Asteroid> AsteroidManager::asteroidList;
 
 void checkForAsteroidCollisions() {
 	for (Asteroid& asteroid1 : AsteroidManager::asteroidList) {
-		Vector2 mainAsteroid = { asteroid1.asteroidCenter.x, asteroid1.asteroidCenter.y };
+		Vector2 mainAsteroid = { asteroid1.position.x, asteroid1.position.y };
 		int mainRadius = asteroid1.radius;
 		int mainId = asteroid1.myId; // Use asteroid1.myId instead of asteroid1.id
 		bool alreadyNotified = false;
 
 		for (Asteroid& asteroid2 : AsteroidManager::asteroidList) {
 			if (mainId != asteroid2.myId) { // Use asteroid2.myId instead of asteroid2.id
-				Vector2 otherAsteroid = { asteroid2.asteroidCenter.x, asteroid2.asteroidCenter.y };
+				Vector2 otherAsteroid = { asteroid2.position.x, asteroid2.position.y };
 				int otherRadius = asteroid2.radius;
 
 				double distanceBetweenAsteroids = sqrt(
@@ -52,31 +52,62 @@ void checkForAsteroidCollisions() {
 						DrawText("COLLIDED", mainAsteroid.x, mainAsteroid.y, 20, GREEN);
 						alreadyNotified = true;
 
-						//handle collision
-						float normalVectorX = mainAsteroid.x - otherAsteroid.x;
-						float normalVectorY = mainAsteroid.y - otherAsteroid.y;
+						//// ::HANDLE COLLISIONS NOW THAT COLLISIONS ARE DETECTED::
+						//// 1) subtract vectors
+						//float subtractedVectorX = mainAsteroid.x - otherAsteroid.x;
+						//float subtractedVectorY = mainAsteroid.y - otherAsteroid.y;
+						//Vector2 finalSubtractedVector = { subtractedVectorX, subtractedVectorY };
 
-						//calc length of above normal vector
-						float length = sqrt(normalVectorX * normalVectorX + normalVectorY * normalVectorY);
+						//// 2) get length (hypotnuse) of traingle
+						//float length = sqrt(subtractedVectorX * subtractedVectorX + subtractedVectorY * subtractedVectorY);
 
-						//normalize the normal vector
-						normalVectorX /= length;
-						normalVectorY /= length;
+						//// 3) "normalize", or reduce the length to a unit value of 1
+						//float normalizedVectorX = subtractedVectorX / length;
+						//float normalizedVectorY = subtractedVectorY / length;
 
-						//calc velocity may not be needed since velocity will not change
-						//relative_velocity = (circle2.vx - circle1.vx) * nx + (circle2.vy - circle1.vy) * ny
+						//// 4) use the "dot product" (Dot Product = A.x * B.x + A.y * B.y) to compute change in velocity
+						//	//asteroid 1 (or main asteroid)
+						//float mainAsteroidDotP = asteroid1.velocity.x * normalizedVectorX + asteroid1.velocity.y * normalizedVectorY;
+						//asteroid1.velocity.x = asteroid1.velocity.x * mainAsteroidDotP * normalizedVectorX;
+						//asteroid1.velocity.y = asteroid1.velocity.y * mainAsteroidDotP * normalizedVectorY;
 
-						//update vectors for both circles
-						asteroid1.asteroidCenter.x += 1 * normalVectorX;
-						asteroid1.asteroidCenter.y += 1 * normalVectorY;
-						Vector2 newAsteroidDirection1 = {normalVectorX,normalVectorY}; 
+						//float othrAsteroidDotP = asteroid2.velocity.x * normalizedVectorX + asteroid2.velocity.y * normalizedVectorY;
+						//asteroid2.velocity.x = asteroid2.velocity.x * othrAsteroidDotP * normalizedVectorX;
+						//asteroid2.velocity.y = asteroid2.velocity.y * othrAsteroidDotP * normalizedVectorY;
 
+			
+						//// ::HANDLE COLLISIONS NOW THAT COLLISIONS ARE DETECTED::
+						// 1) subtract vectors
+						Vector2 collisionNormal = { mainAsteroid.x - otherAsteroid.x, mainAsteroid.y - otherAsteroid.y };
 
-						asteroid2.asteroidCenter.x -= 1 * normalVectorX;
-						asteroid2.asteroidCenter.y -= 1 * normalVectorY;
-						Vector2 newAsteroidDirection2 = {normalVectorX,normalVectorY};
+						// 2) get length (hypotnuse) of traingle
+						float length = sqrt(collisionNormal.x * collisionNormal.x + collisionNormal.y * collisionNormal.y);
 
-						//somehow update angles?
+						// 3) "normalize" the collisionNormal / reduce the length to a unit value of 1
+						collisionNormal.x /= length;
+						collisionNormal.y /= length;
+
+						// 4) use the "dot product" (Dot Product = A.x * B.x + A.y * B.y) to compute change in velocity
+						float mainAsteroidDotP = asteroid1.velocity.x * collisionNormal.x + asteroid1.velocity.y * collisionNormal.y;
+						float otherAsteroidDotP = asteroid2.velocity.x * collisionNormal.x + asteroid2.velocity.y * collisionNormal.y;
+
+						// Use the law of conservation of momentum to update velocities
+						// asteroid 1
+						asteroid1.velocity.x = asteroid1.velocity.x - 2 * mainAsteroidDotP * collisionNormal.x;
+						asteroid1.velocity.y = asteroid1.velocity.y - 2 * mainAsteroidDotP * collisionNormal.y;
+						// asteroid 2
+						asteroid2.velocity.x = asteroid2.velocity.x - 2 * otherAsteroidDotP * collisionNormal.x;
+						asteroid2.velocity.y = asteroid2.velocity.y - 2 * otherAsteroidDotP * collisionNormal.y;
+
+						// Add a small separation distance to the position of both asteroids
+						// without this, the asteroids seem to stick together
+						float separationDistance = 2.0f;
+						asteroid1.position.x += separationDistance * collisionNormal.x;
+						asteroid1.position.y += separationDistance * collisionNormal.y;
+
+						asteroid2.position.x -= separationDistance * collisionNormal.x;
+						asteroid2.position.y -= separationDistance * collisionNormal.y;
+
 
 
 					}
@@ -86,7 +117,48 @@ void checkForAsteroidCollisions() {
 	}
 }
 
+/*
 
+						// Reflect the velocity of asteroid1 along the collision direction
+						// This will cause the asteroid to change direction after collision
+						float dotProduct = asteroid1.velocity.x * normalVectorX + asteroid1.velocity.y * normalVectorY;
+						asteroid1.velocity.x = asteroid1.velocity.x - 2.0f * dotProduct * normalVectorX;
+						asteroid1.velocity.y = asteroid1.velocity.y - 2.0f * dotProduct * normalVectorY;
+
+						// Reflect the velocity of asteroid2 along the collision direction
+						dotProduct = asteroid2.velocity.x * normalVectorX + asteroid2.velocity.y * normalVectorY;
+						asteroid2.velocity.x = asteroid2.velocity.x - 2.0f * dotProduct * normalVectorX;
+						asteroid2.velocity.y = asteroid2.velocity.y - 2.0f * dotProduct * normalVectorY;
+					}
+
+*/
+
+
+//handle collision
+//float normalVectorX = mainAsteroid.x - otherAsteroid.x;
+//float normalVectorY = mainAsteroid.y - otherAsteroid.y;
+
+////calc length of above normal vector
+//float length = sqrt(normalVectorX * normalVectorX + normalVectorY * normalVectorY);
+
+////normalize the normal vector
+//normalVectorX /= length;
+//normalVectorY /= length;
+
+//calc velocity may not be needed since velocity will not change
+//relative_velocity = (circle2.vx - circle1.vx) * nx + (circle2.vy - circle1.vy) * ny
+
+//update vectors for both circles
+//asteroid1.asteroidCenter.x += 1 * normalVectorX;
+//asteroid1.asteroidCenter.y += 1 * normalVectorY;
+//Vector2 newAsteroidDirection1 = {normalVectorX,normalVectorY}; 
+
+
+//asteroid2.asteroidCenter.x -= 1 * normalVectorX;
+//asteroid2.asteroidCenter.y -= 1 * normalVectorY;
+//Vector2 newAsteroidDirection2 = {normalVectorX,normalVectorY};
+
+//somehow update angles?
 
 
 int main() { //PICO 8 FUNCTION _INIT()
@@ -171,8 +243,9 @@ int main() { //PICO 8 FUNCTION _INIT()
 				mt19937 gen(rd());
 				uniform_int_distribution<int> global_func_dist(1, 4);
 
-				//int wall_chosen = rand() % 4 + 1; // 1 through 4 randomly gen
 				int wall_chosen = global_func_dist(gen);
+				//int wall_chosen = 4; //for TS individual walls
+
 				int x;
 				int y;
 				float asteroid_radius = 35.0f;
@@ -181,50 +254,50 @@ int main() { //PICO 8 FUNCTION _INIT()
 				//top 210degrees to 330degrees
 				if (wall_chosen == 1) {
 					uniform_int_distribution<int> dist(220, 800);
-					uniform_real_distribution<float> rand_degree(210.0f, 330.0f);
+					uniform_real_distribution<float> rand_x(-1, 1); //generates a random degree to be passed as argument
 			
 					x = dist(gen);
 					y = 10;
-					direction_of_travel =  rand_degree(gen) / 180.0f * PI;
-					AsteroidManager::asteroidList.emplace_back(x, y, asteroid_radius, direction_of_travel);
+										
+					AsteroidManager::asteroidList.emplace_back(x, y,rand_x(gen),1,20);
 				}
 
 				//left 60degrees to 315degrees
 				if (wall_chosen == 2) {
 					uniform_int_distribution<int> dist(10, 600);
-					uniform_real_distribution<float> rand_degree(60.0f, 315.0f);
+					uniform_real_distribution<float> rand_y(-1, 1);
 
 					x = 240;
 					y = dist(gen);
-					direction_of_travel = rand_degree(gen) / 180.0f * PI;
-					AsteroidManager::asteroidList.emplace_back(x, y, asteroid_radius, direction_of_travel);
+					
+					AsteroidManager::asteroidList.emplace_back(x, y, 1, rand_y(gen), 20);
+
 				}
 
 				//right 120degrees to 240degrees
 				if (wall_chosen == 3) {
 					uniform_int_distribution<int> dist(10, 600);
-					uniform_real_distribution<float> rand_degree(120.0f, 240.0f);
+					uniform_real_distribution<float> rand_y(-1, 1);
 
 					x = 790;
 					y = dist(gen);
-					direction_of_travel = rand_degree(gen) / 180.0f * PI;
-					AsteroidManager::asteroidList.emplace_back(x, y, asteroid_radius, direction_of_travel);
+					
+					AsteroidManager::asteroidList.emplace_back(x, y,-1,rand_y(gen),20);
 				}
 
-				//bottom 30degrees to 150degrees
+				//top 210degrees to 330degrees
 				if (wall_chosen == 4) {
 					uniform_int_distribution<int> dist(220, 800);
-					uniform_real_distribution<float> rand_degree(30.0f, 150.0f);
+					uniform_real_distribution<float> rand_x(-1, 1); //generates a random degree to be passed as argument
 
 					x = dist(gen);
-					y = 590;
-					direction_of_travel = rand_degree(gen) / 180.0f * PI;
-					AsteroidManager::asteroidList.emplace_back(x, y, asteroid_radius, direction_of_travel);
+					y = 580;
+
+					AsteroidManager::asteroidList.emplace_back(x, y, rand_x(gen), -1, 20);
 				}
 
 				DrawText(to_string(wall_chosen).c_str(), 2, 80, 20, GREEN);
 				//DrawText(to_string(x).c_str(), 2, 100, 20, GREEN);
-
 				
 				buildAnotherAsteroid = false;
 			}
@@ -247,7 +320,7 @@ int main() { //PICO 8 FUNCTION _INIT()
 		//bullet with the bullets "void DrawBullet()" function
 		for (Bullet& bullet : BulletManager::bulletList) { //* see explanation below
 			bullet.drawBullet();
-			bullet_center_check = bullet.bulletCenter;
+			//bullet_center_check = bullet.bulletCenter;
 		}
 		//Another way of showing particular bullets for troubleshooting
 		//if (!BulletManager::bulletList.empty()){
@@ -255,7 +328,7 @@ int main() { //PICO 8 FUNCTION _INIT()
 		//}
 		for (Asteroid& asteroid : AsteroidManager::asteroidList) { //* see explanation below
 			asteroid.drawAsteroid();
-			asteroid_center_check = asteroid.asteroidCenter;
+			//asteroid_center_check = asteroid.asteroidCenter;
 		}
 		
 		//currently this is an in efficent way to do this

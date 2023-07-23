@@ -6,23 +6,19 @@ class Asteroid {
 public:
 	static int id;
 	int myId;
-	float x;
-	float y;
 	float radius;
-	float angle;
+	Vector2 position;
+	Vector2 velocity; //represents both speed and direction, but updating this you can simulate movement
 
-	Vector2 asteroidCenter;
-
-	Asteroid(float posX, float posY, float r, float angle);
+	Asteroid(float posX, float posY, float velX, float velY, float r);
 
 	void moveAsteroid();
 	void detectBounds();
-	void detectOtherAsteroids();
 	void drawOutline();
 	void drawAsteroid();
 
 };
-
+ 
 class AsteroidManager { 
 public:
 	static std::vector<Asteroid> asteroidList;
