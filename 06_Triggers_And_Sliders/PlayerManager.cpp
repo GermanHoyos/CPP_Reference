@@ -2,37 +2,37 @@
 #include "PlayerManager.h"
 #include "TextureManager.h"
 
-
-// Screen dimensions
-Vector2 screen = { 800, 600 };
-Vector2 direction;
-float friction = 2.00f;
-float magnitude;
-float magnitudeReducer;
-float finalMagnitude;
+//Vector2 screen = { 800, 600 };
+//Vector2 direction;
+//float friction = 2.00f;
+//float magnitude;
+//float magnitudeReducer;
+//float finalMagnitude;
 
 Player::Player(float posX, float posY, float velX, float velY, float r, Texture2D ships)
 	: position({ posX, posY }), velocity({ velX, velY }), radius(r), ships(ships) {
 	// Aditional implementation code here
+	// Screen dimensions
+
 }
 
 void Player::movePlayer() {
 
-	float acceleration = 10.0f;
+	float acceleration = 5.0f;
 	float dt = TimeUtils::getDeltaTime();
 
 	if (IsKeyDown(KEY_RIGHT)) {
-		rotation--;
+		rotation -= 4;
 	}
 
 	if (IsKeyDown(KEY_LEFT)) {
-		rotation++;
+		rotation += 4;
 	}
 
 	if (IsKeyDown(KEY_UP)) {
 
 		// Calculate the angle in radians based on the rotation (in degrees)
-		float angle = (float)rotation * DEG2RAD;
+		float angle = (float)rotation * DEG2RAD; //this starts off at 0 degrees
 
 		// Calculate the direction vector of the ray
 		direction = { cosf(angle), -sinf(angle) };
@@ -73,7 +73,6 @@ void Player::movePlayer() {
 		position.y = 0;
 	};
 
-
 	// Update the position of the ship based on the velocity
 	position.x += velocity.x;
 	position.y += velocity.y;
@@ -81,13 +80,24 @@ void Player::movePlayer() {
 
 
 void Player::detectBounds() {
+	
+	// For testing purposes, draw vector circle
+	DrawCircleSector(position, radius, 0, rotation, 30, { 0,0,0,0 });
+	
+	// For testing purposes, draw a point vector from the circles origin to its radius in the direction
+	// of travel.
+	DrawCircleV({ position.x + radius * cosf(rotation / 180.0f * PI), position.y - radius * sinf(rotation / 180.0f * PI) }, 5, GREEN);
 
+	// Outlines the radial trigger:
+
+	if (radialTrigger){
+		DrawCircleLines(position.x, position.y, radius * 3, RED);
+	} else {
+		DrawCircleLines(position.x, position.y, radius * 3, GREEN);
+	}
 }
 
 void Player::renderPlayer() {
-
-	// Draw rotated circle
-	DrawCircleSector(position, radius, 0, rotation, 30, {0,0,0,0});
 
 	// Focus only on portion of sprite desired
 	int textureW = ships.width / 2; //split the image into 2 equal parts
@@ -108,8 +118,7 @@ void Player::renderPlayer() {
 	// circle, however rotating the circle does not move that center. Thus you must match the rotation
 	// of the underlay circle by passing a rotation float to the DrawTexturePro square itself
 	DrawTexturePro(ships, sourceRec, destRec, origin, -rotation, WHITE);
-	DrawCircleV({position.x + radius * cosf(rotation / 180.0f * PI), position.y - radius * sinf(rotation / 180.0f * PI)},	5, GREEN);
-
+	
 }
 
 void Player::drawPlayer() {
