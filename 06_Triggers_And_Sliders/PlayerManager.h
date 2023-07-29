@@ -3,15 +3,31 @@
 
 class Player {
 public:
-	//Scoped var's
+	//Scoped var's for testing purposes
 	Vector2 screen = { 800, 600 };
 	Vector2 direction;
+	Vector2 circumferencePoint;
+	Vector2 directionShow;
+	Vector2 displacement;
+	Vector2 circlePoint;
+	Vector2 displayDirection1;
+	Vector2 displayDirection2;
+	Vector2 displayDirection3;
+	Vector2 negRngPoint;
+	Vector2 posRngPoint;
+
 	float friction = 2.00f;
 	float magnitude;
 	float magnitudeReducer;
 	float finalMagnitude;
+	float negRange;
+	float posRange;
+	float displayAngle1;
+	float displayAngle2;
+	float displayAngle3;	
+	
 	bool radialTrigger = false;
-
+	bool lookAtTrigger = false;
 
 	//Constructor var's
 	float radius;

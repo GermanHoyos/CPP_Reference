@@ -19,14 +19,17 @@ Player::Player(float posX, float posY, float velX, float velY, float r, Texture2
 void Player::movePlayer() {
 
 	float acceleration = 5.0f;
+
 	float dt = TimeUtils::getDeltaTime();
 
 	if (IsKeyDown(KEY_RIGHT)) {
 		rotation -= 4;
+
 	}
 
 	if (IsKeyDown(KEY_LEFT)) {
 		rotation += 4;
+
 	}
 
 	if (IsKeyDown(KEY_UP)) {
@@ -84,12 +87,52 @@ void Player::detectBounds() {
 	// For testing purposes, draw vector circle
 	DrawCircleSector(position, radius, 0, rotation, 30, { 0,0,0,0 });
 	
-	// For testing purposes, draw a point vector from the circles origin to its radius in the direction
-	// of travel.
-	DrawCircleV({ position.x + radius * cosf(rotation / 180.0f * PI), position.y - radius * sinf(rotation / 180.0f * PI) }, 5, GREEN);
+	// For testing purposes, draw a point vector from the circles origin to its radius's edge
+	// in the direction of travel.
+	// Sin and Cos method:
+	// DrawCircleV({ position.x + radius * cosf(rotation / 180.0f * PI), position.y - radius * sinf(rotation / 180.0f * PI) }, 5, RED);
+	
+	// Vector method:
+	// Show the "ray" of travel, ONLY snaps to when acceleration is applied 
+	if (magnitude > 0){
+		directionShow = { velocity.x, velocity.y};
+		displacement = { directionShow.x * radius, directionShow.y * radius };
+		circlePoint = { position.x + displacement.x, position.y + displacement.y };
+		//DrawCircleV(circlePoint, 5, RED);
+	}
+
+	// Trig method: "Looking At Vector" display  
+	displayAngle1 = (float)rotation * DEG2RAD;
+	displayDirection1 = { cosf(displayAngle1), -sinf(displayAngle1) };
+	circumferencePoint = { position.x + ((radius * 3) * displayDirection1.x) ,position.y + ((radius * 3) * displayDirection1.y) };
+	//DrawCircleV(circumferencePoint, 5, GREEN);
+	
+	// Give a range to the "Looking at Vector" and plot said range in relation to current object. Trig method
+	negRange = -26.0f;
+	posRange =  26.0f;
+	displayAngle2 = ((float)rotation + negRange) * DEG2RAD; //get angle
+	displayAngle3 = ((float)rotation + posRange) * DEG2RAD; //get angle
+
+	displayDirection2 = { cosf(displayAngle2), -sinf(displayAngle2) }; //plot angle in relation to a circle
+	displayDirection3 = { cosf(displayAngle3), -sinf(displayAngle3) }; //plot angle in relation to a cirlce
+	negRngPoint = { position.x + ((radius * 3) * displayDirection2.x) , position.y + ((radius * 3) * displayDirection2.y) }; //apply angle to objects origin + radius
+	posRngPoint = { position.x + ((radius * 3) * displayDirection3.x) , position.y + ((radius * 3) * displayDirection3.y) }; //apply angle to objects origin + radius
+
+	// Change color of look at sector portion of circle
+	DrawCircleV(negRngPoint, 5, GREEN); //draw applied plotted angle
+	if (!lookAtTrigger){
+		DrawLineV({ position.x,position.y }, { negRngPoint.x, negRngPoint.y }, GREEN); //draw line to plot
+	} else {
+		DrawLineV({ position.x,position.y }, { negRngPoint.x, negRngPoint.y }, RED);
+	}
+	DrawCircleV(posRngPoint, 5, GREEN); //draw applied plotted angle
+	if (!lookAtTrigger){
+		DrawLineV({ position.x,position.y }, { posRngPoint.x, posRngPoint.y }, GREEN); //draw line to plot
+	} else {
+		DrawLineV({ position.x,position.y }, { posRngPoint.x, posRngPoint.y }, RED);
+	}
 
 	// Outlines the radial trigger:
-
 	if (radialTrigger){
 		DrawCircleLines(position.x, position.y, radius * 3, RED);
 	} else {
