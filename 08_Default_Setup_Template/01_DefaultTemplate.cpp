@@ -4,6 +4,12 @@
 
 using namespace std;
 
+//Test functions
+Vector2 angToRadiansDirection(float angle) {
+	Vector2 direction = { cosf(angle), sin(angle) };
+	return direction;
+};
+
 int main() 
 {
 Vector2 screen = {800,600};
@@ -18,13 +24,16 @@ int textureH = ships.height;
 Rectangle sourceRec = { 0.0f, 0.0f, (float)textureW, (float)textureH };
 
 // Destination rectangle (screen rectangle where drawing part of texture)
-Rectangle destRec = { screen.x / 2.0f, screen.y / 2.0f, textureW * 5.0f, textureH * 5.0f };
+Rectangle destRec = { 60, screen.y / 2.0f, textureW * 5.0f, textureH * 5.0f };
 
 // Origin of the texture (rotation/scale point), it's relative to destination rectangle size
 Vector2 origin = { (float)textureW * 5.0f  / 2, (float)textureH * 5.0f / 2 };
 
 // Change this to rotate textures
 int rotation = 0;
+
+// Test Variables (math tests)
+float angle = 0;
 
 SetTargetFPS(60);
 while (WindowShouldClose() == false) {
@@ -40,8 +49,18 @@ while (WindowShouldClose() == false) {
 	DrawTexturePro(ships, sourceRec, destRec, origin, (float)rotation, WHITE);
 	rotation++;
 
-
-
+	//Test functions using circle
+	Vector2 direction;
+	//direction = angToRadiansDirection(75);
+	//float angle = 0;
+	angle++;
+	float angleToRad = angle * 3.15 / 180;
+	direction.x = 250 + 50 * cosf(angleToRad);
+	direction.y = 300 - 50 * sinf(angleToRad);
+	string dir_str = to_string(direction.x) + " " + to_string(direction.y);
+	DrawText(dir_str.c_str(),screen.x / 2, 0, 20, GREEN);
+	DrawCircleV({250, 300},50,BLACK);
+	DrawCircleV({direction.x,direction.y},4,GREEN);
 
 
 
