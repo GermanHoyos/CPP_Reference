@@ -35,7 +35,7 @@ float easeIn(float t) {
 	return t * t;
 }
 Vector2 easeInApply(Vector2 start, Vector2 end, float t) {
-	float factor = easeIn(t);
+	float factor = easeIn(t); // 0.0 -> 1.0
 	float x = start.x + (end.x - start.x) * factor;
 	float y = start.y + (end.y - start.y) * factor;
 	Vector2 xy_returned = {x,y};
@@ -91,7 +91,7 @@ while (WindowShouldClose() == false) {
 	DrawCircleV({direction.x,direction.y},4,GREEN);
 	directionToAngle(origin,direction);
 
-	//easeIn
+	//easeIn //float t = 0.0f; //Vector2 position1 = { 500, 300 }; <- outside of while loop
 	DrawRectangleV(position1,{10,10},GREEN);
 	Vector2 endPosition1 = {750,300};
 	float animationSpeedFactor = 0.05f;
@@ -99,9 +99,6 @@ while (WindowShouldClose() == false) {
 		position1 = easeInApply(position1, endPosition1, t);
 		t += animationSpeedFactor * TimeUtils::getDeltaTime();
 	}
-	
-	
-
 
 EndDrawing();}
 
