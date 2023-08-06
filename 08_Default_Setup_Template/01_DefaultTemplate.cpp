@@ -24,13 +24,13 @@ float directionToAngle(Vector2 origin ,Vector2 direction) {
 	float angle = atan2(origin.y - direction.y,direction.x - origin.x) * 180 / PI;
 	if (angle < 0)
 		angle += 360;
-	string angle_str = to_string(angle);
+	string angle_str = "Angle: " + to_string((int)angle);
 	DrawText(angle_str.c_str(), origin.x - 50, origin.y - 75, 20, GREEN);
 	return angle;
 }
 
 //easeIn
-float easeIn(float t) { //green
+float easeIn(float t) { //BLUE
 	return t * t; //x^2 {0<x<1}
 }
 Vector2 easeInApply(Vector2 start, Vector2 end, float t) {
@@ -42,7 +42,7 @@ Vector2 easeInApply(Vector2 start, Vector2 end, float t) {
 }
 
 //easeOut
-float easeOut(float t) { //red
+float easeOut(float t) { //GREEN
 	return 1 - (1 - t) * (1 - t); //1-(x-1)^2 {0<x<1}
 }
 Vector2 easeOutApply(Vector2 start, Vector2 end, float t) {
@@ -59,6 +59,12 @@ int main()
 Vector2 screen = {800,600};
 InitWindow(screen.x, screen.y, "C++ Raylib");
 
+// Inkscape color pallete
+	Color myGreen = {0, 255, 0, 255};
+	Color myBlue = {0, 255, 255, 255};
+	Color myRed = {255, 0, 0, 255};
+	Color myPurple = {255, 0, 255, 255};
+
 // Textures must be loaded after the InitWindow and before the while game loop
 Texture2D ships = LoadTexture("BgLilgShips.png");
 int textureW = ships.width / 2; //split the image into 2 equal parts
@@ -66,7 +72,7 @@ int textureH = ships.height;
 // Source rectangle (part of the texture to use for drawing)
 Rectangle sourceRec = { 0.0f, 0.0f, (float)textureW, (float)textureH };
 // Destination rectangle (screen rectangle where drawing part of texture)
-Rectangle destRec = { 60, screen.y / 2.0f, textureW * 5.0f, textureH * 5.0f };
+Rectangle destRec = { 260, 80, textureW * 5.0f, textureH * 5.0f };
 // Origin of the texture (rotation/scale point), it's relative to destination rectangle size
 Vector2 origin = { (float)textureW * 5.0f  / 2, (float)textureH * 5.0f / 2 };
 // Change this to rotate textures
@@ -76,14 +82,20 @@ int rotation = 0;
 float angle = 0;
 
 // easeIn
-float t = 0.0f;
-Vector2 position1 = {500, 300}; //easeIn  example
-Vector2 position2 = {500, 340}; //easeOut example
+float t1 = 0.0f;
+float t2 = 0.0f;
+Vector2 position1 = {540, 35};
+bool pos1Switch = false; 
+
+// easeOut
+Vector2 position2 = {540, 60};
+bool pos2Switch = false;
+
 
 SetTargetFPS(60);
 while (WindowShouldClose() == false) {
 	BeginDrawing();
-	ClearBackground({29,43,83,225});
+	ClearBackground({22,22,80,225});
 	// Time mechanics
 	TimeUtils::displaySystemTime();	
 	//Input mechanics
@@ -96,29 +108,39 @@ while (WindowShouldClose() == false) {
 	//black circle:
 	//Test functions using circle, take an angle and display it on a circle
 	angle++;
-	Vector2 origin = {250,300};
+	Vector2 origin = {370,80};
 	DrawCircleV(origin,50,BLACK);
 	Vector2 direction = angleToDirection(angle,origin,50);
-	DrawCircleV({direction.x,direction.y},4,GREEN);
+	DrawCircleV({direction.x,direction.y},4, myRed);
 	directionToAngle(origin,direction);
 
 	//easeIn //float t = 0.0f; //Vector2 position1 = { 500, 300 }; <- outside of while loop
-	DrawRectangleV(position1,{10,10},GREEN);
-	Vector2 endPosition1 = {750,300};
+	DrawText("EaseIn:",450,30,20,myGreen);
+	DrawRectangleV(position1,{10,10},myBlue);
 	float animationSpeedFactor = 0.05f;
-	if (t <= 1.0f) {
-		position1 = easeInApply(position1, endPosition1, t);
-		t += animationSpeedFactor * TimeUtils::getDeltaTime();
+	if (t1 <= 1.0f) {
+		Vector2 endPosition1 = { 750,35 };
+		position1 = easeInApply(position1, endPosition1, t1);
+		t1 += animationSpeedFactor * TimeUtils::getDeltaTime();
+		if (position1.x > 748){
+			t1 = 0.0f;
+			position1.x = 540;
+		}
 	}
-
+	
 	//easeOut //float t = 0.0f //Vector2 position2 = {500, 340}; <-outside of while loop
-	DrawRectangleV(position2,{10,10},RED);
-	Vector2 endPosition2 = {750, 340};
+	DrawText("EaseOut:", 450, 55, 20, myGreen);
+	DrawRectangleV(position2,{10,10},myGreen);
 	//animationSpeedFactor
-	if (t <= 1.0f) {
-		position2 = easeOutApply(position2, endPosition2, t);
-		t += animationSpeedFactor * TimeUtils::getDeltaTime();
-	}
+	if (t2 <= 1.0f) {
+		Vector2 endPosition2 = { 750, 60 };
+		position2 = easeOutApply(position2, endPosition2, t2);
+		t2 += animationSpeedFactor * TimeUtils::getDeltaTime();
+		if (position2.x > 748) {
+			t2 = 0.0f;
+			position2.x = 540;
+		}
+	} 
 	
 
 EndDrawing();}
@@ -127,3 +149,6 @@ UnloadTexture(ships);
 CloseWindow();
 return 0;
 }
+
+
+
