@@ -29,19 +29,29 @@ float directionToAngle(Vector2 origin ,Vector2 direction) {
 	return angle;
 }
 
-
 //easeIn
-float easeIn(float t) {
-	return t * t;
+float easeIn(float t) { //green
+	return t * t; //x^2 {0<x<1}
 }
 Vector2 easeInApply(Vector2 start, Vector2 end, float t) {
 	float factor = easeIn(t); // 0.0 -> 1.0
 	float x = start.x + (end.x - start.x) * factor;
 	float y = start.y + (end.y - start.y) * factor;
-	Vector2 xy_returned = {x,y};
+	Vector2 xy_returned = { x, y };
 	return xy_returned;
 }
 
+//easeOut
+float easeOut(float t) { //red
+	return 1 - (1 - t) * (1 - t); //1-(x-1)^2 {0<x<1}
+}
+Vector2 easeOutApply(Vector2 start, Vector2 end, float t) {
+	float factor = easeOut(t);
+	float x = start.x + (end.x - start.x) * factor;
+	float y = start.y + (end.y - start.y) * factor;
+	Vector2 xy_returned = { x, y };
+	return xy_returned;
+}
 
 
 int main() 
@@ -67,7 +77,8 @@ float angle = 0;
 
 // easeIn
 float t = 0.0f;
-Vector2 position1 = {500, 300};
+Vector2 position1 = {500, 300}; //easeIn  example
+Vector2 position2 = {500, 340}; //easeOut example
 
 SetTargetFPS(60);
 while (WindowShouldClose() == false) {
@@ -99,6 +110,16 @@ while (WindowShouldClose() == false) {
 		position1 = easeInApply(position1, endPosition1, t);
 		t += animationSpeedFactor * TimeUtils::getDeltaTime();
 	}
+
+	//easeOut //float t = 0.0f //Vector2 position2 = {500, 340}; <-outside of while loop
+	DrawRectangleV(position2,{10,10},RED);
+	Vector2 endPosition2 = {750, 340};
+	//animationSpeedFactor
+	if (t <= 1.0f) {
+		position2 = easeOutApply(position2, endPosition2, t);
+		t += animationSpeedFactor * TimeUtils::getDeltaTime();
+	}
+	
 
 EndDrawing();}
 
