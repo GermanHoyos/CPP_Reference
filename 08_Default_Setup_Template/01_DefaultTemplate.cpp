@@ -33,11 +33,19 @@ float directionToAngle(Vector2 origin ,Vector2 direction) {
 float easeIn(float t) { //BLUE
 	return t * t; //x^2 {0<x<1}
 }
-Vector2 easeInApply(Vector2 start, Vector2 end, float t) {
+Vector2 easeInApply(Vector2 start, Vector2 end, float t, bool flip) {
 	float factor = easeIn(t); // 0.0 -> 1.0
-	float x = start.x + (end.x - start.x) * factor;
-	float y = start.y + (end.y - start.y) * factor;
-	Vector2 xy_returned = { x, y };
+	Vector2 xy_returned;
+		if (!flip){
+			float x = start.x + (end.x - start.x) * factor;
+			float y = start.y + (end.y - start.y) * factor;
+			xy_returned = { x, y };
+		}
+		if (flip){
+			float x = start.x - (end.x - start.x) * factor;
+			float y = start.y - (end.y - start.y) * factor;
+			xy_returned = { x, y };
+		}
 	return xy_returned;
 }
 
@@ -89,7 +97,7 @@ bool pos1Switch = false;
 
 // easeOut
 Vector2 position2 = {540, 60};
-bool pos2Switch = false;
+bool	flip = false;
 
 
 SetTargetFPS(60);
@@ -118,13 +126,22 @@ while (WindowShouldClose() == false) {
 	DrawText("EaseIn:",450,30,20,myGreen);
 	DrawRectangleV(position1,{10,10},myBlue);
 	float animationSpeedFactor = 0.05f;
-	if (t1 <= 1.0f) {
+	if (t1 <= 1.0f &&  flip == false) {
 		Vector2 endPosition1 = { 750,35 };
-		position1 = easeInApply(position1, endPosition1, t1);
+		position1 = easeInApply(position1, endPosition1, t1, flip);
 		t1 += animationSpeedFactor * TimeUtils::getDeltaTime();
-		if (position1.x > 748){
+		if (position1.x > endPosition1.x - 1){
+			flip = true;
 			t1 = 0.0f;
-			position1.x = 540;
+		}
+	}
+	if(t1 <= 1.0 && flip == true) {
+		Vector2 endPosition1 = { 750,35 };
+		position1 = easeInApply(position1, endPosition1, t1, flip);
+		t1 += animationSpeedFactor * TimeUtils::getDeltaTime();
+		if (position1.x < 541) {
+			flip = false;
+			t1 = 0.0f;
 		}
 	}
 	
