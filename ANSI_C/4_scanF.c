@@ -12,8 +12,8 @@ int main(void)
 
     printf("Input your three initials and your age: ");
     scanf("%c%c%c%d", &first, &middle, &last, &age);
-    printf("\nGreetings %c.%c.%c.  %s %d.\n",
-        first, middle, last,
+    printf("\nGreetings %c.%c.%c.  %s %d.\n", //for addresses "%p"
+        first, middle, last, //to display addresses "&"
         "Next year your age will be", age + 1);
     return 0;
 }
