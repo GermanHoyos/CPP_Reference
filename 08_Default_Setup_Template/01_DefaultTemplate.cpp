@@ -1,7 +1,6 @@
 #include "raylib_and_all_headers_wrapper.h"
 #include "TimeManager.h"
 #include "InputManager.h"
-
 using namespace std;
 
 Vector2 angleToDirection(float angle, Vector2 origin, float radius){
@@ -35,15 +34,18 @@ float easeIn(float t) { //BLUE
 }
 Vector2 easeInApply(Vector2 start, Vector2 end, float t, bool flip) {
 	float factor = easeIn(t); // 0.0 -> 1.0
-	DrawText(to_string(factor).c_str(), 0, 100, 20, GREEN);
 	Vector2 xy_returned;
-		if (!flip) {
+
+	DrawText(to_string(factor).c_str(), 0, 100, 20, GREEN);
+		if (!flip) //right 
+		{
 			float x = start.x + (end.x - start.x) * factor;
 			float y = start.y + (end.y - start.y) * factor;
 			xy_returned = { x, y };
 			DrawText(to_string(xy_returned.x).c_str(), 0, 120, 20, GREEN);
 		}
-		if (flip) {
+		if (flip) //left
+		{
 			float x = start.x - (start.x - end.x) * factor;
 			float y = start.y + (end.y - start.y) * factor;
 			xy_returned = { x, y };
@@ -56,17 +58,30 @@ Vector2 easeInApply(Vector2 start, Vector2 end, float t, bool flip) {
 float easeOut(float t) { //GREEN
 	return 1 - (1 - t) * (1 - t); //1-(x-1)^2 {0<x<1}
 }
-Vector2 easeOutApply(Vector2 start, Vector2 end, float t) {
+Vector2 easeOutApply(Vector2 start, Vector2 end, float t, bool flip) {
 	float factor = easeOut(t);
-	float x = start.x + (end.x - start.x) * factor;
-	float y = start.y + (end.y - start.y) * factor;
-	Vector2 xy_returned = { x, y };
+	Vector2 xy_returned;
+
+	if (!flip) //right
+	{
+		float x = start.x + (end.x - start.x) * factor;
+		float y = start.y + (end.y - start.y) * factor;
+		xy_returned = { x, y };
+	}
+	if (flip) //left
+	{
+		float x = start.x - (start.x - end.x) * factor;
+		float y = start.y + (end.y - start.y) * factor;
+		xy_returned = { x, y };
+	}
+
 	return xy_returned;
 }
 
 //Main**********************
-				//**************************
-								//**************************
+//**************************
+//**************************
+
 int main() 
 {
 Vector2 screen = {800,600};
@@ -103,7 +118,7 @@ bool pos1Switch = false;
 // easeOut
 Vector2 position2 = {540, 60};
 bool	flip = false;
-
+bool	flip0= false;
 
 SetTargetFPS(60);
 while (WindowShouldClose() == false) {
@@ -132,7 +147,7 @@ while (WindowShouldClose() == false) {
 	DrawRectangleV(position1,{10,10},myBlue);
 	float animationSpeedFactor = 0.05f;
 	if (t1 <= 1.0f &&  flip == false) {
-		Vector2 endPosition1 = { 750,35 };
+		Vector2 endPosition1 = { 750, 35 };
 		position1 = easeInApply(position1, endPosition1, t1, flip);
 		t1 += animationSpeedFactor * TimeUtils::getDeltaTime();
 		if (position1.x > endPosition1.x - 1){
@@ -154,16 +169,24 @@ while (WindowShouldClose() == false) {
 	DrawText("EaseOut:", 450, 55, 20, myGreen);
 	DrawRectangleV(position2,{10,10},myGreen);
 	//animationSpeedFactor
-	if (t2 <= 1.0f) {
+	if (t2 <= 1.0f && flip0 == false) {
 		Vector2 endPosition2 = { 750, 60 };
-		position2 = easeOutApply(position2, endPosition2, t2);
+		position2 = easeOutApply(position2, endPosition2, t2, flip0);
 		t2 += animationSpeedFactor * TimeUtils::getDeltaTime();
-		if (position2.x > 748) {
+		if (position2.x > endPosition2.x - 1 ) {
+			flip0 = true;
 			t2 = 0.0f;
-			position2.x = 540;
 		}
 	} 
-	
+	if (t2 <= 1.0f && flip0 == true) {
+		Vector2 endPosition2 = { 540, 60 };
+		position2 = easeOutApply(position2, endPosition2, t2, flip0);
+		t2 += animationSpeedFactor * TimeUtils::getDeltaTime();
+		if (position2.x < endPosition2.x + 1) {
+			flip0 = false;
+			t2 = 0.0f;
+		}
+	}
 
 	//additional console debuging information displays
 	//DrawText("Debug 1:",0,100,20,GREEN);
