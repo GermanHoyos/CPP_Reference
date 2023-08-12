@@ -35,16 +35,19 @@ float easeIn(float t) { //BLUE
 }
 Vector2 easeInApply(Vector2 start, Vector2 end, float t, bool flip) {
 	float factor = easeIn(t); // 0.0 -> 1.0
+	DrawText(to_string(factor).c_str(), 0, 100, 20, GREEN);
 	Vector2 xy_returned;
-		if (!flip){
+		if (!flip) {
 			float x = start.x + (end.x - start.x) * factor;
 			float y = start.y + (end.y - start.y) * factor;
 			xy_returned = { x, y };
+			DrawText(to_string(xy_returned.x).c_str(), 0, 120, 20, GREEN);
 		}
-		if (flip){
-			float x = start.x - (end.x - start.x) * factor;
-			float y = start.y - (end.y - start.y) * factor;
+		if (flip) {
+			float x = start.x - (start.x - end.x) * factor;
+			float y = start.y + (end.y - start.y) * factor;
 			xy_returned = { x, y };
+			DrawText(to_string(xy_returned.x).c_str(), 0, 140, 20, GREEN);
 		}
 	return xy_returned;
 }
@@ -61,7 +64,9 @@ Vector2 easeOutApply(Vector2 start, Vector2 end, float t) {
 	return xy_returned;
 }
 
-
+//Main**********************
+				//**************************
+								//**************************
 int main() 
 {
 Vector2 screen = {800,600};
@@ -135,11 +140,11 @@ while (WindowShouldClose() == false) {
 			t1 = 0.0f;
 		}
 	}
-	if(t1 <= 1.0 && flip == true) {
-		Vector2 endPosition1 = { 750,35 };
+	if (t1 <= 1.0f && flip == true) {
+		Vector2 endPosition1 = { 540,35 };
 		position1 = easeInApply(position1, endPosition1, t1, flip);
 		t1 += animationSpeedFactor * TimeUtils::getDeltaTime();
-		if (position1.x < 541) {
+		if (position1.x < endPosition1.x + 1) {
 			flip = false;
 			t1 = 0.0f;
 		}
@@ -159,6 +164,19 @@ while (WindowShouldClose() == false) {
 		}
 	} 
 	
+
+	//additional console debuging information displays
+	//DrawText("Debug 1:",0,100,20,GREEN);
+	//DrawText("Debug 2:",0,120,20,GREEN);
+	//DrawText("Debug 3:",0,140,20,GREEN);
+	DrawText("Debug 4:",0,160,20,GREEN);
+	DrawText("Debug 5:",0,180,20,GREEN);
+	DrawText("Debug 6:",0,200,20,GREEN);
+	DrawText("Debug 7:",0,220,20,GREEN);
+	DrawText("Debug 8:",0,240,20,GREEN);
+	DrawText("Debug 9:",0,260,20,GREEN);
+
+
 
 EndDrawing();}
 

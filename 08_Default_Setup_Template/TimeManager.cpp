@@ -39,8 +39,8 @@ void TimeUtils::displaySystemTime() {
 	string fps_str = "Fps: " + to_string(FPS);
 
 	//display seconds and minutes
-	DrawLine(210, 0, 210, 100, GREEN);
-	DrawLine(210, 100, 0, 100, GREEN);
+	DrawLine(210, 0, 210, 600, GREEN); //x,y x,y
+	//DrawLine(210, 100, 0, 100, GREEN);
 
 	DrawText(fps_str.c_str(), 2, 2, 20, GREEN);
 	DrawText(seconds_str.c_str(), 2, 20, 20, GREEN);
