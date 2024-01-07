@@ -1,34 +1,47 @@
+/**********************************
+**   WHY USE TEMPLATES           ** 
+**                               **
+**                               **
+**                               **
+**********************************/
 #include <iostream>
 
-// Template class definition
-template <class T>
-class MyTemplateClass {
-public:
-    T data;
+//not needed becuase of template...
+void Swap(int& a, int& b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
 
-    // Function to set the value of the 'data' member
-    void setData(T newValue) {
-        // Assign the provided value to the 'data' member
-        data = newValue;
-    }
-};
+//not needed becuase of template...
+void Swap(char& a, char& b) {
+    char temp = a;
+    a = b;
+    b = temp;
+}
+
+// NOW the problem is what if i wanted to swap bools and floats and doubls... etc..
+// Heres the solution! with generics
+template<typename T> // or template<class Type>
+void Swap(T& a, T& b) {
+    T temp = a;
+    a = b;
+    b = temp;
+}
 
 int main() {
-    // Instantiate the template class with int
-    MyTemplateClass<int> objInt;
-    
-    // Set the value for the 'data' member using setData
-    objInt.setData(5);
 
-    // Instantiate the template class with double
-    MyTemplateClass<double> objDouble;
-    
-    // Set the value for the 'data' member using setData
-    objDouble.setData(2.5);
+    int a=5, b=7;
+    cout << a << " - " << b << endl;
+    Swap(a, b);  // or Swap<int>(a,b);
+    cout << a << " - " << b << endl;
 
-    // Display the values
-    std::cout << "Integer Value: " << objInt.data << std::endl;
-    std::cout << "Double Value: " << objDouble.data << std::endl;
+    char c='c', d='d';
+    cout << c << " - " << d << endl;
+    Swap(c, d); // or Swap<char>(a,b);
+    cout << c << " - " << d << endl;
+
+
 
     return 0;
 }
